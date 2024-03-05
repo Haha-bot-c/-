@@ -1,0 +1,57 @@
+using UnityEngine;
+
+public class CharacterControllerWithMouseAndKeyboard : MonoBehaviour
+{
+    [SerializeField] private float _speed = 5.0f;
+    [SerializeField] private float _jumpForce = 5.0f;
+    [SerializeField] private float _gravity = -9.81f;
+    [SerializeField] private float _mouseSensitivity = 2.0f;
+
+    private CharacterController _controller;
+    private Vector3 _velocity;
+    private float _rotationX = 0.0f;
+    private float _rotationY = 0.0f;
+
+    private void Start()
+    {
+        _controller = GetComponent<CharacterController>();
+    }
+
+    private void Update()
+    {
+        Move();
+        BrowseMouse();
+        Jump();
+    }
+
+    private void Move()
+    {
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        Vector3 move = transform.right * x + transform.forward * z;
+
+        _velocity.y += _gravity * Time.deltaTime;
+
+        _controller.Move(move * _speed * Time.deltaTime + _velocity * Time.deltaTime);
+    }
+
+    private void BrowseMouse()
+    {
+        float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
+
+        _rotationX -= mouseY * _mouseSensitivity;
+        _rotationY += mouseX * _mouseSensitivity;
+        _rotationX = Mathf.Clamp(_rotationX, -90.0f, 90.0f);
+        transform.localRotation = Quaternion.Euler(_rotationX, _rotationY, 0.0f);
+    }
+
+    private void Jump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && _controller.isGrounded)
+        {
+            _velocity.y = _jumpForce;
+        }
+    }
+}
