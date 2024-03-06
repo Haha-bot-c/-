@@ -1,0 +1,20 @@
+using UnityEngine;
+
+public class Alarm : MonoBehaviour
+{
+    [SerializeField] private float _minVolume = 0;
+    [SerializeField] private float _maxVolume = 1.0f;
+    [SerializeField] private float _fadeSpeed = 0.01f;
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private TrigeprPlayer _trigeprPlayer;
+
+    private void Update()
+    {
+        FadeAlarmVolume(_trigeprPlayer.IsTriggered());
+    }
+
+    private void FadeAlarmVolume(bool isTriggered)
+    {
+        _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, isTriggered ? _maxVolume : _minVolume, _fadeSpeed * Time.deltaTime);
+    }
+}
