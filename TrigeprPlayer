@@ -1,17 +1,14 @@
-using System;
 using UnityEngine;
 
-public class TrigeprPlayer : MonoBehaviour
+public class TriggerPlayer : MonoBehaviour
 {
-    public event Action OnTrigger;
-    private bool isTriggered = false;
+    [SerializeField] private Alarm _alarm;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.GetComponent<Player>())
         {
-            OnTrigger?.Invoke();
-            isTriggered = true;
+            _alarm.TriggerEnter();
         }
     }
 
@@ -19,13 +16,7 @@ public class TrigeprPlayer : MonoBehaviour
     {
         if (other.gameObject.GetComponent<Player>())
         {
-            OnTrigger?.Invoke();
-            isTriggered = false;
+            _alarm.TriggerExit();
         }
-    }
-
-    public bool IsTriggered()
-    {
-        return isTriggered;
     }
 }
