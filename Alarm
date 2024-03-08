@@ -7,33 +7,34 @@ public class Alarm : MonoBehaviour
     [SerializeField] private float _maxVolume = 1.0f;
     [SerializeField] private float _fadeSpeed = 0.01f;
     [SerializeField] private AudioSource _audioSource;
-    [SerializeField] private TrigeprPlayer _trigeprPlayer;
 
-    private void OnEnable()
-    {
-        _trigeprPlayer.OnTrigger += TrigeprPlayer_OnTrigger;
-    }
+    private Coroutine _fadeCoroutine;
 
-    private void OnDisable()
+    public void TriggerEnter()
     {
-        _trigeprPlayer.OnTrigger -= TrigeprPlayer_OnTrigger;
-    }
-
-    private void TrigeprPlayer_OnTrigger()
-    {
-        //  я плачу. если это не верно обьесните как правельно
-        StartCoroutine(FadeVolume());
-    }
-
-    IEnumerator FadeVolume()
-    {
-        WaitForSeconds wait = new(0.6f);
-        
-        while (gameObject.activeSelf)
+        if (_fadeCoroutine != null)
         {
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, _trigeprPlayer.IsTriggered() ? _maxVolume : _minVolume, _fadeSpeed * Time.deltaTime);
+            StopCoroutine(_fadeCoroutine);
+        }
+        _fadeCoroutine = StartCoroutine(FadeVolume(_maxVolume));
+    }
 
-            yield return wait;
+    public void TriggerExit()
+    {
+        if (_fadeCoroutine != null)
+        {
+            StopCoroutine(_fadeCoroutine);
+        }
+        _fadeCoroutine = StartCoroutine(FadeVolume(_minVolume));
+    }
+
+    private IEnumerator FadeVolume(float targetVolume)
+    {
+        while (enabled)
+        {
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, targetVolume, _fadeSpeed * Time.deltaTime);
+
+            yield return null;
         }
     }
 }
