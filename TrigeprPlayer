@@ -1,13 +1,16 @@
+using System;
 using UnityEngine;
 
 public class TrigeprPlayer : MonoBehaviour
 {
+    public event Action OnTrigger;
     private bool isTriggered = false;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.GetComponent<Player>())
         {
+            OnTrigger?.Invoke();
             isTriggered = true;
         }
     }
@@ -16,6 +19,7 @@ public class TrigeprPlayer : MonoBehaviour
     {
         if (other.gameObject.GetComponent<Player>())
         {
+            OnTrigger?.Invoke();
             isTriggered = false;
         }
     }
