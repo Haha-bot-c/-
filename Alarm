@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Alarm : MonoBehaviour
 {
@@ -8,13 +9,31 @@ public class Alarm : MonoBehaviour
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private TrigeprPlayer _trigeprPlayer;
 
-    private void Update()
+    private void OnEnable()
     {
-        FadeAlarmVolume(_trigeprPlayer.IsTriggered());
+        _trigeprPlayer.OnTrigger += TrigeprPlayer_OnTrigger;
     }
 
-    private void FadeAlarmVolume(bool isTriggered)
+    private void OnDisable()
     {
-        _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, isTriggered ? _maxVolume : _minVolume, _fadeSpeed * Time.deltaTime);
+        _trigeprPlayer.OnTrigger -= TrigeprPlayer_OnTrigger;
+    }
+
+    private void TrigeprPlayer_OnTrigger()
+    {
+        //  я плачу. если это не верно обьесните как правельно
+        StartCoroutine(FadeVolume());
+    }
+
+    IEnumerator FadeVolume()
+    {
+        WaitForSeconds wait = new(0.6f);
+        
+        while (gameObject.activeSelf)
+        {
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, _trigeprPlayer.IsTriggered() ? _maxVolume : _minVolume, _fadeSpeed * Time.deltaTime);
+
+            yield return wait;
+        }
     }
 }
